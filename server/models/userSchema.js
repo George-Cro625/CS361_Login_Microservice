@@ -1,4 +1,6 @@
 const mongoose = require(`mongoose`);
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
     {
@@ -44,5 +46,28 @@ const userSchema = new mongoose.Schema(
         timestamps: true, // documents creation date and update dates
     },
 );
+
+userSchema.pre("save", async function(){
+    if(!this.isModified("password")) {
+        return
+    }
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    } catch(error) {
+        throw error;
+    }
+});
+
+// generate email verification token
+userSchema.methods.getEmailVerificationToken = function(){
+    const verificationToken = crypto.randomBytes(20).toString("hex");
+    this.emailVerificationToken = crypto.createHash("sha256").update
+    (verificationToken).digest('hex')
+
+    // set expiration 24 horus
+    this.emailVerificationExpire = Date.now() +24 * 60 * 60 * 1000
+    return verificationToken;
+};
 
 module.exports = mongoose.model("User", userSchema);
