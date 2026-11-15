@@ -1,9 +1,33 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const {body} = require("express-validator")
 
 const router = express.Router();
 
-router.post('/register', authController.register)
+const registerValidation = [
+body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("name is required")
+    .isLength({min: 2, max: 50}), 
+body("email")
+    .trim()
+    .isEmail()
+    .withMessage("Valid email is required")
+    .normalizeEmail(), 
+body("password")
+    .isLength({min:6})
+    .withMessage("password must be at least 6 characters"),
+];
+
+const emailValidation = [
+    body("email")
+        .isEmail()
+        .withMessage("Please provide a valid email address."),
+]
+
+router.post('/register', registerValidation, authController.register)
 router.get('/verify-email/:token', authController.verifyEmail)
+router.post("/resend-verification", emailValidation, authController.resendVerification);
 
 module.exports = router;

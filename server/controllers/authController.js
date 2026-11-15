@@ -76,3 +76,25 @@ exports.verifyEmail = async (req, res, next)=>{
         next(next);
    }
 };
+
+// resent verification
+exports.resendVerification = async(req, res, next)=>{
+    try{
+        const user = await userSchema.findOne({email: req.body.email});
+
+        if(!user) return res.status(404).json({success: false, message:
+            "User not found"});
+
+    const verificationToken = user.getEmailVerificationToken();
+    await user.save({validateBeforeSave: false});
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/
+    ${verificationToken}`;
+
+    await sendVerificationEmail(user, verificationUrl);
+    res.status(200).json({success: true, message: "Email resent"});
+
+    }catch(error){
+        next(error)
+    }
+}
