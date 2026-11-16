@@ -12,8 +12,27 @@ const sendTokenResponse = async(user, statusCode, res)=>{
         {expiresIn: process.env.JWT_EXPIRE},
     );
 
+    const refreshToken = jwt.sign(
+        { id: user._id, },
+        process.env.JWT_REFRESH_TOKEN,
+        {expiresIn: process.env.JWT_REFRESH_EXPIRE},
+    );
+
+    user.refreshToken = refreshToken;
     await user.save({validateBeforeSave: false});
-    res.status(statusCode).json({
+
+    const cookieOptions = {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    };
+
+    
+    res
+    .status(statusCode)
+    .cookie("token", accessToken, cookieOptions)
+    .json({
         success: true, 
         accessToken, 
         user: {
@@ -138,4 +157,12 @@ exports.login = async (req, res, next) => {
     } catch(error){
         next(error);
     }
+};
+
+exports.logout = async (req, res)=>{
+    res.cookie("token", "none", {
+        expires: new Date(Date.now() + 10 * 10000),
+        httpOnly: true,
+    });
+    res.status(200).json({success: true, message: "logged out"});
 };

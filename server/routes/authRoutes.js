@@ -39,5 +39,6 @@ router.post('/register', registerValidation, authController.register)
 router.get('/verify-email/:token', authController.verifyEmail)
 router.post("/resend-verification", emailValidation, authController.resendVerification);
 router.post("/login",loginValidation, authController.login);
+router.get("/logout", authController.logout);
 
 module.exports = router;
