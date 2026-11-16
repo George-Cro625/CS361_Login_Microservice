@@ -57,6 +57,10 @@ userSchema.pre("save", async function(){
     } catch(error) {}
 });
 
+userSchema.methods.matchPassword = async function(enteredpassword){
+    return await bcrypt.compare(enteredpassword, this.password);
+};
+
 // generate email verification token
 userSchema.methods.getEmailVerificationToken = function(){
     const verificationToken = crypto.randomBytes(20).toString("hex");

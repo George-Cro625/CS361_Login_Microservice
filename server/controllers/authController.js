@@ -2,6 +2,29 @@ const userSchema = require('../models/userSchema');
 const {validationResult} = require('express-validator');
 const {sendVerificationEmail} = require('../utils/emailService');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
+
+const sendTokenResponse = async(user, statusCode, res)=>{
+    const accessToken = jwt.sign(
+        { id: user._id, role: user.role},
+        process.env.JWT_SECRET,
+        {expiresIn: process.env.JWT_EXPIRE},
+    );
+
+    await user.save({validateBeforeSave: false});
+    res.status(statusCode).json({
+        success: true, 
+        accessToken, 
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+        },
+    });
+};
 
 
 exports.register = async(req, res, next) => {
@@ -97,4 +120,22 @@ exports.resendVerification = async(req, res, next)=>{
     }catch(error){
         next(error)
     }
-}
+};
+
+// login validation
+exports.login = async (req, res, next) => {
+    try{
+        const {email, password} = req.body;
+    const user = await userSchema.findOne({email}).select("+password");
+
+    if(!user || !(await user.matchPassword(password))){
+        return res
+        .status(401)
+        .json({success: false, message: "Invalid credentials"});
+    }
+
+    sendTokenResponse(user, 200, res);
+    } catch(error){
+        next(error);
+    }
+};
