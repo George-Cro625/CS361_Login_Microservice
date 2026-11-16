@@ -3,7 +3,7 @@ This is a Login & Profile authentication microservice to be used by Group 25 for
 
 !! UPDATED AS OF 11/16/26 !!
 
-The CS_362_Login_Microservice will send & receive HTTP requests (POST & GET) to a Database specified (default to MONGODB) which will
+The CS_361_Login_Microservice will send & receive HTTP requests (POST & GET) to a Database specified (default to MONGODB) which will
 provide the following microservice:
 
 1. Allow User to create a Profile/account on database using email & password
