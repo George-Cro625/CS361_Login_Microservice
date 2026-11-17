@@ -7,9 +7,9 @@ headers = {"Content-Type": "application/json"}
 # 1. Register a new test user
 register_url = f"{base_url}/register"
 reg_payload = {
-    "name": "Michael 'Test User' York",
-    "email": "yorkmi@oregonstate.edu",
-    "password": "big_secret",
+    "name": "George 'Test User' Cross",
+    "email": "crossgeorge625@gmail.com",
+    "password": "admin",
 }
 
 print("Registering test user...")
@@ -27,8 +27,8 @@ except urllib.error.HTTPError as e:
 # 2. Now test logging in with those exact credentials
 login_url = f"{base_url}/login"
 login_payload = {
-    "email": "yorkmi@oregonstate.edu",
-    "password": "big_secret",
+    "email": "crossgeorge625@gmail.com",
+    "password": "admin123456",
 }
 
 print("\nAttempting login...")

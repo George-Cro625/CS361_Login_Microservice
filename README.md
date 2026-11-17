@@ -3,13 +3,52 @@ This is a Login & Profile authentication microservice to be used by Group 25 for
 
 !! UPDATED AS OF 11/16/26 !!
 
-The CS_361_Login_Microservice will send & receive HTTP requests (POST & GET) to a Database specified (default to MONGODB) which will
-provide the following microservice:
+Description: The microservice allows an application to register users, verify email addresses, maintain user JSON Web Tokens for authentication, resend verification emails, log in, and log out.
+Request Steps:
+Specify the URL that is hosting the app
+Specify the HTTP request in JSON format
+Use HTTP requests (POST, GET, etc) to the specified address (/register, /login, /logout, etc).
 
-1. Allow User to create a Profile/account on database using email & password
-2. Validate that User is unique
-3. Validate that password meets password requirements
-4. Hash/bcrypt password prior to storing on database
-5. Store a JSON Web Token authentification cookie tied to user profile (in-work).
-6. ...[microservice still in-work]
+Example Request Call:
+url = "http://localhost:5000/api/v2/auth/register"
+
+headers = {
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "name": "Michael York",
+    "email": "michael@example.com",
+    "password": "password123"
+}
+
+data = json.dumps(payload).encode("utf-8")
+
+request = urllib.request.Request(
+    url,
+    data=data,
+    headers=headers,
+    method="POST"
+)
+
+response = urllib.request.urlopen(request)
+
+print(response.read().decode("utf-8"))
+
+
+Receive Steps:
+Use HTTP request (POST, GET, etc) to request data
+ 
+Example Receive Call:
+
+    {
+    "success": true,
+    "message": "Login successful",
+    "token": "abc123xyz",
+    "user": {
+        "name": "Michael York",
+        "email": "michael@example.com"
+    }
+
+
 
